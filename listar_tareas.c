@@ -19,37 +19,63 @@ class Program
 
     static void Main()
     {
-        Console.WriteLine("¿Cuántas tareas deseas ingresar?");
-        string entrada = Console.ReadLine();
+        int cantidad = 0;
 
-        if (!EsNumeroEntre(entrada, 1, 100))
+        while (true)
         {
-            Console.WriteLine("Cantidad inválida. Finalizando programa.");
-            return;
-        }
+            Console.Write("¿Cuántas tareas deseas ingresar? (1-100): ");
+            string entrada = Console.ReadLine();
 
-        int cantidad = int.Parse(entrada);
+            if (string.IsNullOrWhiteSpace(entrada))
+            {
+                Console.WriteLine("La entrada no puede estar vacía.");
+                continue;
+            }
+
+            if (!EsNumeroEntre(entrada, 1, 100))
+            {
+                Console.WriteLine("Debes ingresar un número entre 1 y 100.");
+                continue;
+            }
+
+            cantidad = int.Parse(entrada);
+            break;
+        }
 
         for (int i = 0; i < cantidad; i++)
         {
-            Console.Write($"Descripción de la tarea #{i + 1}: ");
-            string descripcion = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(descripcion))
+            while (true)
             {
-                Console.WriteLine("La descripción no puede estar vacía.");
-                i--;
-                continue;
-            }
+                Console.Write($"Descripción de la tarea #{i + 1}: ");
+                string descripcion = Console.ReadLine();
 
-            if (!SoloLetras(descripcion))
-            {
-                Console.WriteLine("La descripción solo debe contener letras y espacios.");
-                i--;
-                continue;
-            }
+                if (string.IsNullOrWhiteSpace(descripcion))
+                {
+                    Console.WriteLine("La descripción no puede estar vacía.");
+                    continue;
+                }
 
-            tareas.Add(new Tarea(descripcion));
+                if (!SoloLetras(descripcion))
+                {
+                    Console.WriteLine("La descripción solo debe contener letras y espacios.");
+                    continue;
+                }
+
+                if (descripcion.Length > 50)
+                {
+                    Console.WriteLine("La descripción no debe exceder los 50 caracteres.");
+                    continue;
+                }
+
+                if (tareas.Exists(t => t.Descripcion.Equals(descripcion, StringComparison.OrdinalIgnoreCase)))
+                {
+                    Console.WriteLine("Ya existe una tarea con esa descripción.");
+                    continue;
+                }
+
+                tareas.Add(new Tarea(descripcion));
+                break;
+            }
         }
 
         Console.Clear();
