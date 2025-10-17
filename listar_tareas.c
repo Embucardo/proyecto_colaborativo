@@ -19,157 +19,75 @@ class Program
 
     static void Main()
     {
-        bool salir = false;
+        Console.WriteLine("¿Cuántas tareas deseas ingresar?");
+        string entrada = Console.ReadLine();
 
-        while (!salir)
+        if (!EsNumeroEntre(entrada, 1, 100))
         {
-            Console.Clear();
-            Console.WriteLine("GESTOR DE TAREAS");
-            Console.WriteLine("1. Agregar nueva tarea");
-            Console.WriteLine("2. Listar tareas pendientes");
-            Console.WriteLine("3. Listar tareas completadas");
-            Console.WriteLine("4. Marcar tarea como completada");
-            Console.WriteLine("5. Eliminar tarea");
-            Console.WriteLine("6. Salir");
-            Console.Write("\nSelecciona una opción: ");
+            Console.WriteLine("Cantidad inválida. Finalizando programa.");
+            return;
+        }
 
-            string opcion = Console.ReadLine();
+        int cantidad = int.Parse(entrada);
 
-            switch (opcion)
+        for (int i = 0; i < cantidad; i++)
+        {
+            Console.Write($"Descripción de la tarea #{i + 1}: ");
+            string descripcion = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(descripcion))
             {
-                case "1":
-                    AgregarTarea();
-                    break;
-                case "2":
-                    ListarTareas(false);
-                    break;
-                case "3":
-                    ListarTareas(true);
-                    break;
-                case "4":
-                    MarcarComoCompletada();
-                    break;
-                case "5":
-                    EliminarTarea();
-                    break;
-                case "6":
-                    salir = true;
-                    Console.WriteLine("Hasta luego");
-                    break;
-                default:
-                    Console.WriteLine("Opción inválida");
-                    Console.ReadKey();
-                    break;
+                Console.WriteLine("La descripción no puede estar vacía.");
+                i--;
+                continue;
             }
-        }
-    }
 
-    static void AgregarTarea()
-    {
-        Console.Clear();
-        Console.Write("Escribe la descripción de la nueva tarea: ");
-        string descripcion = Console.ReadLine();
+            if (!SoloLetras(descripcion))
+            {
+                Console.WriteLine("La descripción solo debe contener letras y espacios.");
+                i--;
+                continue;
+            }
 
-        if (!string.IsNullOrWhiteSpace(descripcion))
-        {
             tareas.Add(new Tarea(descripcion));
-            Console.WriteLine("Tarea agregada correctamente.");
-        }
-        else
-        {
-            Console.WriteLine("La descripción no puede estar vacía.");
         }
 
-        Console.ReadKey();
+        Console.Clear();
+        ListarTareasPendientes();
     }
 
-    static void ListarTareas(bool completadas)
+    static void ListarTareasPendientes()
     {
-        Console.Clear();
-        Console.WriteLine(completadas ? "TAREAS COMPLETADAS:\n" : "TAREAS PENDIENTES:\n");
+        Console.WriteLine("TAREAS PENDIENTES:\n");
 
         int contador = 0;
-        for (int i = 0; i < tareas.Count; i++)
+        foreach (var tarea in tareas)
         {
-            if (tareas[i].Completada == completadas)
+            if (!tarea.Completada)
             {
                 contador++;
-                Console.WriteLine($"{contador}. {tareas[i].Descripcion}");
+                Console.WriteLine($"{contador}. {tarea.Descripcion}");
             }
         }
 
         if (contador == 0)
         {
-            Console.WriteLine("No hay tareas en esta categoría.");
-        }
-
-        Console.ReadKey();
-    }
-
-    static void MarcarComoCompletada()
-    {
-        Console.Clear();
-        Console.WriteLine("TAREAS PENDIENTES:\n");
-
-        List<int> indices = new List<int>();
-        for (int i = 0; i < tareas.Count; i++)
-        {
-            if (!tareas[i].Completada)
-            {
-                indices.Add(i);
-                Console.WriteLine($"{indices.Count}. {tareas[i].Descripcion}");
-            }
-        }
-
-        if (indices.Count == 0)
-        {
             Console.WriteLine("No hay tareas pendientes.");
-            Console.ReadKey();
-            return;
         }
-
-        Console.Write("Selecciona el número de la tarea a marcar como completada: ");
-        if (int.TryParse(Console.ReadLine(), out int seleccion) && seleccion > 0 && seleccion <= indices.Count)
-        {
-            tareas[indices[seleccion - 1]].Completada = true;
-            Console.WriteLine("Tarea marcada como completada.");
-        }
-        else
-        {
-            Console.WriteLine("Selección inválida.");
-        }
-
-        Console.ReadKey();
     }
 
-    static void EliminarTarea()
+    static bool SoloLetras(string texto)
     {
-        Console.Clear();
-        Console.WriteLine("TAREAS REGISTRADAS:\n");
-
-        for (int i = 0; i < tareas.Count; i++)
+        foreach (char c in texto)
         {
-            Console.WriteLine($"{i + 1}. {tareas[i].Descripcion} [{(tareas[i].Completada ? "Completada" : "Pendiente")}]");
+            if (!char.IsLetter(c) && !char.IsWhiteSpace(c))
+                return false;
         }
+        return true;
+    }
 
-        if (tareas.Count == 0)
-        {
-            Console.WriteLine("No hay tareas para eliminar.");
-            Console.ReadKey();
-            return;
-        }
-
-        Console.Write("Selecciona el número de la tarea a eliminar: ");
-        if (int.TryParse(Console.ReadLine(), out int seleccion) && seleccion > 0 && seleccion <= tareas.Count)
-        {
-            tareas.RemoveAt(seleccion - 1);
-            Console.WriteLine("Tarea eliminada correctamente.");
-        }
-        else
-        {
-            Console.WriteLine("Selección inválida.");
-        }
-
-        Console.ReadKey();
+    static bool EsNumeroEntre(string entrada, int min, int max)
+    {
+        return int.TryParse(entrada, out int numero) && numero >= min && numero <= max;
     }
 }
