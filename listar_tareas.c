@@ -1,38 +1,52 @@
 using System;
-
+using System.Collections.Generic;
 
 class Program
 {
-    static string[] tareas = new string[50];
-    static bool[] completadas = new bool[50];
-    static int total = 0;
+    struct Tarea
+    {
+        public string Descripcion;
+        public bool Completada;
 
+        public Tarea(string descripcion, bool completada)
+        {
+            Descripcion = descripcion;
+            Completada = completada;
+        }
+    }
+
+    static List<Tarea> tareas = new List<Tarea>();
 
     static void Main()
     {
-        tareas[0] = "Hacer la tarea de matemáticas";
-        completadas[0] = false;
-
-
-        tareas[1] = "Comprar comida";
-        completadas[1] = true;
-
-
-        total = 2;
-
-
-        ListarTareas();
+        InicializarTareas();
+        ListarTareasPendientes();
     }
 
-
-    static void ListarTareas()
+    static void InicializarTareas()
     {
-        for (int i = 0; i < total; i++)
+        tareas.Add(new Tarea("Hacer la tarea de matemáticas", false));
+        tareas.Add(new Tarea("Comprar comida", true));
+        tareas.Add(new Tarea("Estudiar para el examen", false));
+    }
+
+    static void ListarTareasPendientes()
+    {
+        Console.WriteLine("Tareas pendientes:\n");
+
+        int contador = 0;
+        for (int i = 0; i < tareas.Count; i++)
         {
-            if (!completadas[i])
+            if (!tareas[i].Completada)
             {
-                Console.WriteLine($"{i + 1}. {tareas[i]}");
+                contador++;
+                Console.WriteLine($"{contador}. {tareas[i].Descripcion}");
             }
+        }
+
+        if (contador == 0)
+        {
+            Console.WriteLine(" No hay tareas pendientes. ¡Buen trabajo!");
         }
     }
 }
